@@ -1,0 +1,1 @@
+use `mvn verify` to generate the report  `target/site/serenity/index.html`
