@@ -1,10 +1,7 @@
 package com.example.testcases.jsonplaceholder
 
-import com.example.screenplay.CompromisedTest
-import io.restassured.RestAssured.given
 import io.restassured.http.ContentType
 import net.serenitybdd.core.Serenity
-import net.serenitybdd.core.exceptions.TestCompromisedException
 import net.serenitybdd.junit.runners.SerenityRunner
 import net.serenitybdd.rest.SerenityRest
 import net.serenitybdd.screenplay.Actor
@@ -13,17 +10,14 @@ import net.serenitybdd.screenplay.rest.abilities.CallAnApi
 import net.serenitybdd.screenplay.rest.interactions.Get
 import net.serenitybdd.screenplay.rest.interactions.Patch
 import net.serenitybdd.screenplay.rest.interactions.Post
-import net.serenitybdd.screenplay.rest.interactions.Put
 import net.serenitybdd.screenplay.rest.questions.ResponseConsequence.seeThatResponse
-import org.apache.http.HttpStatus
-import org.apache.http.HttpStatus.*
+import org.apache.http.HttpStatus.SC_CREATED
+import org.apache.http.HttpStatus.SC_OK
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.Matchers.greaterThan
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.Matchers.greaterThan
-import kotlin.AssertionError
 
 
 @RunWith(SerenityRunner::class)
