@@ -1,20 +1,15 @@
 package com.example.testcases.jsonplaceholder
 
-import io.restassured.http.ContentType
-import net.serenitybdd.core.Serenity
 import net.serenitybdd.junit.runners.SerenityRunner
-import net.serenitybdd.rest.SerenityRest
+import net.serenitybdd.markers.IsSilent
 import net.serenitybdd.screenplay.Actor
+import net.serenitybdd.screenplay.Performable
 import net.serenitybdd.screenplay.actors.Cast
 import net.serenitybdd.screenplay.rest.abilities.CallAnApi
 import net.serenitybdd.screenplay.rest.interactions.Get
-import net.serenitybdd.screenplay.rest.interactions.Patch
-import net.serenitybdd.screenplay.rest.interactions.Post
-import net.serenitybdd.screenplay.rest.questions.ResponseConsequence.seeThatResponse
-import org.apache.http.HttpStatus.SC_CREATED
-import org.apache.http.HttpStatus.SC_OK
-import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.Matchers.greaterThan
+import net.serenitybdd.screenplay.rest.questions.ResponseConsequence.*
+import org.apache.http.HttpStatus.*
+import org.hamcrest.CoreMatchers.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -38,48 +33,20 @@ class PostsIT {
                 .statusCode(SC_OK)
                 .body("userId", `is`(1))
         })
+        restClient.attemptsTo(SilentlyGetSomething())
+
     }
 
-    @Test
-    fun `when getting all posts, there should be more than 99 ones`() {
-        restClient.attemptsTo(Get.resource("/posts"))
-        restClient.should(seeThatResponse("a lot of posts are returned") { it
-                .statusCode(SC_OK)
-                .body("size()", greaterThan(99))
+}
+
+open class SilentlyGetSomething : Performable, IsSilent {
+    override fun <T : Actor> performAs(actor: T) {
+        actor.attemptsTo(Get.resource("/posts/2"))
+        actor.should(seeThatResponse("post has userId") { it
+            .statusCode(SC_OK)
+            .body("userId", `is`(1))
         })
-        Serenity.recordReportData().withTitle("number of posts")
-                .andContents(SerenityRest.lastResponse().jsonPath().getList<Any>("").size.toString())
-    }
 
-    @Test
-    fun `when getting all posts from a single user`() {
-        restClient.attemptsTo(Get.resource("/posts").with {
-            it.queryParam("userId", 1) })
-        restClient.should(seeThatResponse("some posts are returned") { it
-                .statusCode(SC_OK)
-                .body("size()", greaterThan(9))
-        })
     }
-
-    @Test
-    fun `when adding a post`() {
-        restClient.attemptsTo(Post.to("/posts").with {
-            it.body(this.javaClass.getResourceAsStream("post.json")) })
-        restClient.should(seeThatResponse("a lot of posts are returned") { it
-                .statusCode(SC_CREATED)
-                .body("id", `is`(101))
-        })
-    }
-
-    @Test
-    fun `when updating a post`() {
-        restClient.attemptsTo(Patch.to("/posts/1").with {
-            it.contentType(ContentType.JSON).body("{ \"title\" : \"newTitle\"}") })
-        restClient.should(seeThatResponse("title was updated") { it
-                .statusCode(SC_OK)
-                .body("title", `is`("newTitle"))
-        })
-    }
-
 
 }
